@@ -190,6 +190,8 @@ fun AdbManagerApp() {
                             onLocalAppsClick = { navController.navigate(AppDestination.LocalApps.route) },
                             onInstallClick = { navController.navigate(AppDestination.Install.route) },
                             onDownloadClick = { navController.navigate(AppDestination.Download.route) },
+                            onTvFilesClick = { navController.navigate("tv_files") },
+                            onProcessesClick = { navController.navigate("processes") },
                             onFilesClick = { navController.navigate(AppDestination.Files.route) },
                             onScreenshotClick = { navController.navigate(AppDestination.Screenshot.route) },
                             onShellClick = { navController.navigate(AppDestination.Shell.route) },
@@ -272,6 +274,12 @@ fun AdbManagerApp() {
                     }
                     appComposable(AppDestination.Files.route, SharedToolKeys.Files) {
                         FileTransferScreen(bottomPadding = bottomPadding, onBackClick = { navController.popBackStack() })
+                    }
+                    appComposable("tv_files") {
+                        FileTransferScreen(bottomPadding = bottomPadding, televisionFiles = true, onBackClick = { navController.popBackStack() })
+                    }
+                    appComposable("processes") {
+                        com.sky22333.skyadb.ui.processes.ProcessesScreen(bottomPadding = bottomPadding, onBackClick = { navController.popBackStack() })
                     }
                     appComposable(AppDestination.Screenshot.route, SharedToolKeys.Screenshot) {
                         ScreenshotScreen(bottomPadding = bottomPadding, onBackClick = { navController.popBackStack() })

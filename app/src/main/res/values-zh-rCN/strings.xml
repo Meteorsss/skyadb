@@ -725,4 +725,19 @@
     <string name="mirror_toggle_keyboard">显示或关闭输入键盘</string>
     <string name="mirror_hide_keyboard">关闭输入键盘</string>
     <string name="usb_connection_hint">请保持数据线连接，在目标设备开启 USB 调试，并允许 USB 调试授权。授权等待超时后可重新连接。</string>
+    <string name="tv_files_title">电视文件</string>
+    <string name="tv_files_transfer_hint">当前管理已连接设备。选择文件后，底部双向箭头可传到另一端；切换本机可选择上传文件或下载目录。</string>
+    <string name="processes_title">进程管理</string>
+    <string name="processes_device_memory">设备内存：%1$s</string>
+    <string name="processes_used_memory">已用内存：%1$s</string>
+    <string name="processes_available_memory">可用内存：%1$s</string>
+    <string name="processes_running_memory">运行进程内存（PSS 合计）：%1$s</string>
+    <string name="processes_search">搜索名称、进程名或 PID</string>
+    <string name="processes_explanation">读取的是已连接电视的内存，按进程 PSS 降序排列。可用内存包含可回收缓存，PSS 合计不等于系统已用内存。停止将强行停止整个应用（包含其子进程）；系统可能自动重启服务。</string>
+    <string name="processes_load_failed">读取或操作失败，请检查 ADB 连接及设备权限后刷新。</string>
+    <string name="processes_count">运行进程：%1$d</string>
+    <string name="processes_native_readonly">系统原生进程／未识别应用：仅查看</string>
+    <string name="processes_stop">停止进程</string>
+    <string name="processes_stop_confirm">确定强行停止“%1$s”（%2$s）及其全部进程？未保存的数据可能丢失。停止桌面、设置等系统应用可能影响电视操作。</string>
+    <string name="processes_stopped">已请求停止 %1$s；服务可能被系统重新启动。</string>
 </resources>

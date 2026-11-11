@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sky22333.skyadb.AppServices
 import com.sky22333.skyadb.R
-import com.sky22333.skyadb.apps.AppDisplayEnricher
 import com.sky22333.skyadb.files.LocalFileManager
 import com.sky22333.skyadb.i18n.appString
 import com.sky22333.skyadb.model.AdbOperationResult
@@ -14,13 +13,11 @@ import com.sky22333.skyadb.model.AppInfo
 import com.sky22333.skyadb.model.OperationStatus
 import com.sky22333.skyadb.repository.AdbRepository
 import java.io.File
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class AppsUiState(
     val query: String = "",
@@ -105,11 +102,7 @@ class AppsViewModel(
                                 ),
                         )
                     }
-                    val enriched =
-                        withContext(Dispatchers.Default) {
-                            AppDisplayEnricher.enrichWithLocal(AppServices.context, result.data)
-                        }
-                    state.update { snapshot -> snapshot.copy(apps = enriched) }
+
                 }
                 is AdbOperationResult.Failure -> {
                     state.update { snapshot ->
