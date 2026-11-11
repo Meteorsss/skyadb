@@ -98,7 +98,10 @@ class AppsViewModel(
                             loading = false,
                             operationStatus =
                                 OperationStatus.Success(
-                                    appString(R.string.apps_loaded_count, result.data.size)
+                                    appString(R.string.apps_loaded_count, result.data.size) +
+                                        if (result.data.any { it.label == it.packageName }) {
+                                            "\n" + appString(R.string.apps_remote_label_unavailable)
+                                        } else ""
                                 ),
                         )
                     }

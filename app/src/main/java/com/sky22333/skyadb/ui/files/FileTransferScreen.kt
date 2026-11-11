@@ -260,7 +260,7 @@ private fun FileManagerContent(
         )
 
         AnimatedVisibility(
-            visible = uiState.needsStoragePermission,
+            visible = uiState.needsStoragePermission && (!televisionFiles || uiState.activePane == FilePaneId.Local),
             enter = fadeIn(FileMotion),
             exit = fadeOut(tween(100)),
         ) {

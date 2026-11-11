@@ -740,4 +740,5 @@
     <string name="processes_stop">停止进程</string>
     <string name="processes_stop_confirm">确定强行停止“%1$s”（%2$s）及其全部进程？未保存的数据可能丢失。停止桌面、设置等系统应用可能影响电视操作。</string>
     <string name="processes_stopped">已请求停止 %1$s；服务可能被系统重新启动。</string>
+    <string name="apps_remote_label_unavailable">部分应用的真实名称无法从设备读取，已显示完整包名，不再用包名末尾猜测名称。</string>
 </resources>

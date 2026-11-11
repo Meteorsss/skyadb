@@ -740,4 +740,5 @@
     <string name="processes_stop">Stop process</string>
     <string name="processes_stop_confirm">Force-stop %1$s (%2$s) and all its processes? Unsaved data may be lost. Stopping system apps such as the launcher or Settings can disrupt the TV.</string>
     <string name="processes_stopped">Requested stop for %1$s; the system may restart services.</string>
+    <string name="apps_remote_label_unavailable">Some labels could not be read from this device. The full package name is shown instead of a guessed name.</string>
 </resources>
