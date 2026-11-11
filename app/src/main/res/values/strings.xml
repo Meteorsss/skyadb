@@ -725,4 +725,20 @@
     <string name="mirror_toggle_keyboard">Show or hide text keyboard</string>
     <string name="mirror_hide_keyboard">Close text keyboard</string>
     <string name="usb_connection_hint">Keep the data cable connected, enable USB debugging on the target and allow its debugging authorization prompt. Reconnect if authorization times out.</string>
+    <string name="tv_files_title">TV files</string>
+    <string name="tv_files_transfer_hint">Manage the connected device. Select files and use the transfer arrows to send them to the other side. Switch to Local to choose uploads or a download folder.</string>
+    <string name="processes_title">Process manager</string>
+    <string name="processes_device_memory">Device memory: %1$s</string>
+    <string name="processes_used_memory">Used memory: %1$s</string>
+    <string name="processes_available_memory">Available memory: %1$s</string>
+    <string name="processes_running_memory">Running process memory (total PSS): %1$s</string>
+    <string name="processes_search">Search name, process or PID</string>
+    <string name="processes_explanation">Memory is read from the connected device, sorted by PSS. Available memory includes reclaimable cache; total PSS differs from system used memory. Stop force-stops the entire app, including child processes. Services may restart automatically.</string>
+    <string name="processes_load_failed">Unable to read or operate. Check ADB connectivity and device permissions, then refresh.</string>
+    <string name="processes_count">Running processes: %1$d</string>
+    <string name="processes_native_readonly">Native or unidentified process: read only</string>
+    <string name="processes_stop">Stop process</string>
+    <string name="processes_stop_confirm">Force-stop %1$s (%2$s) and all its processes? Unsaved data may be lost. Stopping system apps such as the launcher or Settings can disrupt the TV.</string>
+    <string name="processes_stopped">Requested stop for %1$s; the system may restart services.</string>
+    <string name="apps_remote_label_unavailable">Some labels could not be read from this device. The full package name is shown instead of a guessed name.</string>
 </resources>

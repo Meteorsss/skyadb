@@ -109,6 +109,10 @@ class FileTransferViewModel(
     private var statusClearJob: Job? = null
     private var lastProgressEmitMs: Long = 0L
 
+    fun openTelevisionFiles() {
+        state.update { it.copy(activePane = FilePaneId.Remote, remote = FilePaneState(path = "/sdcard"), selectedPaths = emptySet()) }
+    }
+
     fun refreshAll() {
         loadPane(FilePaneId.Local, state.value.local.path)
         loadPane(FilePaneId.Remote, state.value.remote.path)

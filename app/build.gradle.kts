@@ -97,3 +97,34 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
+
+// Build a tiny shell-side DEX using the installed SDK; it is not part of the phone app classes.
+val helperClasses = layout.buildDirectory.dir("tvHelper/classes")
+val helperAssets = layout.buildDirectory.dir("generated/tvHelperAssets")
+val helperBootClasspath = androidComponents.sdkComponents.bootClasspath
+val compileTvHelper by tasks.registering(JavaCompile::class) {
+    source(fileTree("src/tvHelper/java") { include("**/*.java") })
+    classpath = files(helperBootClasspath)
+    destinationDirectory.set(helperClasses)
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+    options.encoding = "UTF-8"
+}
+val dexTvHelper by tasks.registering(JavaExec::class) {
+    dependsOn(compileTvHelper)
+    classpath = files(androidComponents.sdkComponents.sdkDirectory.map {
+        it.file("build-tools/37.0.0/lib/d8.jar")
+    })
+    mainClass.set("com.android.tools.r8.D8")
+    inputs.dir(helperClasses)
+    outputs.dir(helperAssets)
+    doFirst {
+        val output = helperAssets.get().asFile
+        output.mkdirs()
+        args = listOf("--min-api", "24", "--output", output.absolutePath) +
+            helperBootClasspath.get().flatMap { listOf("--lib", it.asFile.absolutePath) } +
+            fileTree(helperClasses).matching { include("**/*.class") }.files.map { it.absolutePath }
+    }
+}
+android.sourceSets.getByName("main").assets.srcDir(helperAssets.get().asFile)
+tasks.named("preBuild") { dependsOn(dexTvHelper) }

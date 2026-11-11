@@ -338,7 +338,15 @@ class DefaultAdbRepository(
     }
 
     override suspend fun listApps(): AdbOperationResult<List<AppInfo>> {
-        return kadbManager.listApps().logFailure(DiagnosticModule.Apps, "读取应用列表")
+        return when (val result = kadbManager.listApps()) {
+            is AdbOperationResult.Failure -> result.logFailure(DiagnosticModule.Apps, "读取应用列表")
+            is AdbOperationResult.Success -> {
+                val labels = com.sky22333.skyadb.apps.RemoteAppLabels.load(this)
+                AdbOperationResult.Success(result.data.map { app ->
+                    app.copy(label = labels[app.packageName] ?: app.packageName)
+                }.sortedWith(compareBy<AppInfo> { !it.enabled }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.label }))
+            }
+        }
     }
 
     override suspend fun launchApp(packageName: String): AdbOperationResult<Unit> {

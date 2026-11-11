@@ -17,6 +17,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -88,6 +89,7 @@ private val IconSize = 22.dp
 
 @Composable
 fun FileTransferScreen(
+    televisionFiles: Boolean = false,
     bottomPadding: Dp = 0.dp,
     onBackClick: () -> Unit,
     viewModel: FileTransferViewModel = viewModel(),
@@ -101,11 +103,13 @@ fun FileTransferScreen(
     }
 
     LaunchedEffect(Unit) {
+        if (televisionFiles) viewModel.openTelevisionFiles()
         viewModel.onStoragePermissionResult()
         viewModel.refreshAll()
     }
 
     FileManagerContent(
+        televisionFiles = televisionFiles,
         uiState = uiState,
         bottomPadding = bottomPadding,
         onBackClick = onBackClick,
@@ -147,6 +151,7 @@ fun FileTransferScreen(
 
 @Composable
 private fun FileManagerContent(
+    televisionFiles: Boolean = false,
     uiState: FileTransferUiState,
     bottomPadding: Dp = 0.dp,
     onBackClick: () -> Unit,
@@ -255,7 +260,7 @@ private fun FileManagerContent(
         )
 
         AnimatedVisibility(
-            visible = uiState.needsStoragePermission,
+            visible = uiState.needsStoragePermission && (!televisionFiles || uiState.activePane == FilePaneId.Local),
             enter = fadeIn(FileMotion),
             exit = fadeOut(tween(100)),
         ) {
@@ -270,12 +275,27 @@ private fun FileManagerContent(
             TransferProgress(status = uiState.operationStatus)
         }
 
+        if (televisionFiles) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                TextButton(onClick = { onActivatePane(FilePaneId.Remote) }, enabled = !transferring) {
+                    Text(stringResource(R.string.tv_files_title))
+                }
+                TextButton(onClick = { onActivatePane(FilePaneId.Local) }, enabled = !transferring) {
+                    Text(stringResource(R.string.files_side_local))
+                }
+            }
+            Text(
+                text = stringResource(R.string.tv_files_transfer_hint),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
         Row(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
         ) {
-            FilePane(
+            if (!televisionFiles || uiState.activePane == FilePaneId.Local) FilePane(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
@@ -290,7 +310,7 @@ private fun FileManagerContent(
                 onDeleteEntry = onDeleteEntry,
                 onNavigateUp = { onGoUpPane(FilePaneId.Local) },
             )
-            FilePane(
+            if (!televisionFiles || uiState.activePane == FilePaneId.Remote) FilePane(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
@@ -307,7 +327,7 @@ private fun FileManagerContent(
             )
         }
 
-        ActivePaneIndicator(activePane = uiState.activePane)
+        if (!televisionFiles) ActivePaneIndicator(activePane = uiState.activePane)
 
         FileBottomBar(
             canGoUp = active.canGoUp,
