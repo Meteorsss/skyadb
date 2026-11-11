@@ -8,6 +8,10 @@ on:
         required: true
         default: "v1.0.0"
 
+concurrency:
+  group: android-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -16,6 +20,7 @@ env:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main'
     name: 构建并发布正式版
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -59,6 +64,7 @@ jobs:
             echo "缺少发布签名密钥，请配置 SIGNING_KEY_BASE64、KEY_ALIAS、KEY_STORE_PASSWORD、KEY_PASSWORD。" >&2
             exit 1
           fi
+          umask 077
           mkdir -p "${RUNNER_TEMP}/signing"
           echo "${SIGNING_KEY_BASE64}" | base64 --decode > "${RUNNER_TEMP}/signing/release.p12"
 
@@ -92,10 +98,21 @@ jobs:
           export VERSION_NAME VERSION_CODE
           ./gradlew --no-daemon assembleRelease
 
+      - name: Verify release signature and prepare versioned APK
+        run: |
+          set -euo pipefail
+          APK_PATH="$(find app/build/outputs/apk/release -name '*.apk' -print -quit)"
+          "${ANDROID_HOME}/build-tools/37.0.0/apksigner" verify --verbose --print-certs "$APK_PATH" | tee "${RUNNER_TEMP}/release-signature.txt"
+          grep -qi '01dcecc6ffbd78b9e97c07f9b24e6d13e052279cd3280d729cbe82fcc56baadc' "${RUNNER_TEMP}/release-signature.txt"
+          mkdir -p dist
+          cp "$APK_PATH" "dist/skyadb-${{ inputs.tag }}.apk"
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+
       - name: 发布正式版 APK 到 GitHub Releases
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG_INPUT: ${{ inputs.tag }}
+          RELEASE_COMMIT: ${{ github.sha }}
         run: |
           set -euo pipefail
           RELEASE_TAG="$(echo "${RELEASE_TAG_INPUT}" | xargs)"
@@ -103,7 +120,7 @@ jobs:
             echo "版本标签不能为空。" >&2
             exit 1
           fi
-          APK_PATH="$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)"
+          APK_PATH="dist/skyadb-${RELEASE_TAG}.apk"
           RELEASE_TITLE="skyadb ${RELEASE_TAG}"
           CURRENT_TAG="${RELEASE_TAG}"
           PREVIOUS_TAG="$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -v "^${CURRENT_TAG}$" | head -n 1 || true)"
@@ -126,9 +143,13 @@ jobs:
             gh release edit "${RELEASE_TAG}" \
               --title "${RELEASE_TITLE}" \
               --notes-file "${RELEASE_NOTES}"
-            gh release upload "${RELEASE_TAG}" "${APK_PATH}" --clobber
+            gh release upload "${RELEASE_TAG}" "${APK_PATH}" dist/SHA256SUMS.txt --clobber
           else
-            gh release create "${RELEASE_TAG}" "${APK_PATH}" \
+            gh release create "${RELEASE_TAG}" "${APK_PATH}" dist/SHA256SUMS.txt \
+              --target "${RELEASE_COMMIT}" \
               --title "${RELEASE_TITLE}" \
               --notes-file "${RELEASE_NOTES}"
           fi
+      - name: Remove temporary signing key
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/signing/release.p12"
