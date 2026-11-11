@@ -126,5 +126,5 @@ val dexTvHelper by tasks.registering(JavaExec::class) {
             fileTree(helperClasses).matching { include("**/*.class") }.files.map { it.absolutePath }
     }
 }
-android.sourceSets.getByName("main").assets.srcDir(helperAssets)
+android.sourceSets.getByName("main").assets.srcDir(helperAssets.get().asFile)
 tasks.named("preBuild") { dependsOn(dexTvHelper) }
